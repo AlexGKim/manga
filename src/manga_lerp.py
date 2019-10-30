@@ -11,8 +11,9 @@ if __name__ == "__main__":
     n_jobs=1
 
     #range of (1+v) that are possible
-    amin=0.99
-    amax=1.01
+    arange =1e-3
+    amin=10**-arange
+    amax=10**arange
 
     # data range observer frame
     lmin=3800
@@ -23,7 +24,6 @@ if __name__ == "__main__":
     # Probably would be better for the model spectrum to be natively in log(lambda)
     dlam = 5
     lam_m = numpy.arange(lmin*amin-dlam,lmax*amax+dlam*1.5,dlam)
-
 
     # Read in data
 
@@ -44,9 +44,7 @@ if __name__ == "__main__":
 
 
     data = {'lam0': numpy.log(filedata[0][w0,0]), 'flux0': filedata[0][w0,1], 'lam1': numpy.log(filedata[1][w1,0]), 'flux1': filedata[1][w1,1],
-        'lam_m':numpy.log(lam_m), 'nlam_m': len(lam_m),'nlam0':nlam0,'nlam1':nlam1,'amin':numpy.log(amin),'amax':numpy.log(amax)}
-
-
+        'lam_m':numpy.log(lam_m), 'nlam_m': len(lam_m),'nlam0':nlam0,'nlam1':nlam1,'arange':arange}
 
     # As an initial condition take the average spectrum
     ones = numpy.interp(numpy.log(lam_m),numpy.log(filedata[0][:,0]),filedata[0][:,1]) + numpy.interp(numpy.log(lam_m),numpy.log(filedata[1][:,0]),filedata[1][:,1]) 

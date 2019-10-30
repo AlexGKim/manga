@@ -19,8 +19,7 @@ data {
   int nlam0;
   int nlam1;
 
-  real amin;
-  real amax;
+  real arange;
 
   vector[nlam0] lam0;
   vector[nlam0] flux0;
@@ -34,7 +33,7 @@ parameters {
   vector<lower=0, upper=100>[nlam_m] flux;
   simplex[2] norm;
   // simplex[2] a_raw;
-  real<lower=-1e-2,upper=1e-2> scale_a;
+  real<lower=-arange,upper=arange> scale_a;
   real<lower=0> sigma;
 }
 
@@ -48,5 +47,5 @@ model {
   target += cauchy_lpdf(flux0| flux0_model, sigma);
   target += cauchy_lpdf(flux1| flux1_model, sigma);
 
-  target += cauchy_lpdf(sigma|0,.03); # this is based on the dispersion from zero shift
+  target += cauchy_lpdf(sigma|0,.03); // this is based on the dispersion from zero shift
 }

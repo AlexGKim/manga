@@ -7,11 +7,11 @@ import pickle
 with open('fit_lerp.pkl', 'rb') as handle:
     ans=pickle.load(handle)
 
-plt.plot(ans['scale_a'])
-plt.show()
+# plt.plot(ans['scale_a'])
+# plt.show()
 
-plt.plot(ans['sigma'])
-plt.show()
+# plt.plot(ans['sigma'])
+# plt.show()
 
 
 
@@ -26,8 +26,9 @@ print(r'${:8.0f}_{{-{:8.0f}}}^{{+{:8.0f}}}$'.format(dum[0],dum[0]-dum[1],dum[2]-
 # plt.show()
 
 #range of (1+v) that are possible
-amin=0.99
-amax=1.01
+arange =1e-3
+amin=10**-arange
+amax=10**arange
 
 # data range observer frame
 lmin=3800
@@ -56,9 +57,7 @@ plt.plot(lam_m,spec,label='fit')
 plt.xlim((lmin,lmax))
 plt.ylim((0,5))
 plt.legend()
-plt.show()
-#plt.savefig('spectra.png')
-wefew
+plt.savefig('spectra.png')
 
 plt.plot((ans['n_1']))
 plt.show()
