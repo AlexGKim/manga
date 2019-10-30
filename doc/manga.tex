@@ -1,0 +1,58 @@
+\documentclass[11pt, oneside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+\usepackage{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   		% ... or a4paper or a5paper or ... 
+%\geometry{landscape}                		% Activate for rotated page geometry
+%\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+								% TeX will automatically convert eps --> pdf in pdflatex		
+\usepackage{amssymb}
+\usepackage{url}
+%SetFonts
+
+%SetFonts
+
+
+%\title{Brief Article}
+%\author{The Author}
+%\date{}							% Activate to display a given date or no date
+
+\begin{document}
+%\maketitle
+%\section{}
+%\subsection{}
+
+Satadru provided me with two files containing the data of two spaxels,
+\path{manga-7991-12701-38-26.txt} and \path{manga-7991-12701-38-38.txt}.
+The first spectrum I  label with `1` and the second wtih `2`.
+The two spectra are shown in Figure~\ref{spectra:example}.
+
+\begin{figure}[htbp] %  figure placement: here, top, bottom, or page
+   \centering
+   \includegraphics[width=5in]{../src/spectra.png} 
+   \caption{The two spectra and the mean underlying spectrum.
+   \label{spectra:example}}
+\end{figure}
+
+The data are modeled as follows:
+\begin{itemize}
+\item Model spectrum $I(\lambda)$-- The spectra are assumed to have the same spectral energy distribution, whose amplitude can vary and wavelengths shifted by velocities.
+The underlying spectrum is modeled as a set of flux values on a grid of wavelength values.  The spectrum values between the points are given by linear interpolation between
+the grid points.
+\item Normalization factors $n$-- The spectrum for each spaxel is the model spectrum times a normalization factor.
+\item Velocity factor $a$-- The line-of-sight velocity in each spaxel relative to the model spectrum.  
+\item Dispersion $\sigma$-- Gaussian randomness between the data and the model spectrum.  This accounts for the fact
+that the data files do not contain measurement uncertainties and that there are real differences between the true and model spectra.  The same dispersion
+ise used for both spectra.
+\end{itemize}
+
+The data from spectrum $i$, $\lambda_i$ and $f_i$ are thus modeled as
+\begin{equation}
+f_i \sim \mathcal{N}\left(n_i I(\ln(\lambda_i) + a_i), \sigma\right).
+\end{equation}
+
+The model is fit to the data.
+The mean model spectrum is shown in Figure~\ref{spectra:example}.
+Of particular interest is the velocity shift of the two spectra, which is to first order
+$(\exp{\left(a_2-a_1\right) }- 1)c$. 
+
+\end{document}  
