@@ -42,13 +42,11 @@ model {
   vector[nlam0] flux0_model;
   vector[nlam1] flux1_model;
 
-
   flux0_model = 2*norm[1]*lerp(lam0, -0.5*scale_a+lam_m, flux);
   flux1_model = 2*norm[2]*lerp(lam1, 0.5*scale_a+lam_m, flux);
 
+  target += cauchy_lpdf(flux0| flux0_model, sigma);
+  target += cauchy_lpdf(flux1| flux1_model, sigma);
 
-  target += normal_lpdf(flux0| flux0_model, sigma);
-  target += normal_lpdf(flux1| flux1_model, sigma);
-
-  target += cauchy_lpdf(sigma|0,.5);
+  target += cauchy_lpdf(sigma|0,.03); # this is based on the dispersion from zero shift
 }

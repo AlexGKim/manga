@@ -54,9 +54,12 @@ if __name__ == "__main__":
     ones[ones <=0] = 1e-2
 
     init = [{
-        'flux': ones, 'a_scale':0, 'n':[0.5,0.5], 'sigma':0.1
+        'flux': ones, 'a_scale':0.0, 'n':[0.5,0.5], 'sigma':0.03
     } for i in range(chains)]
 
+    # init = [{
+    #     'flux': ones, 'n':[0.5,0.5], 'sigma':0.03
+    # } for i in range(chains)]
 
     sm = pystan.StanModel(file='manga_lerp.stan')
 
