@@ -6,6 +6,8 @@
 \usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
 								% TeX will automatically convert eps --> pdf in pdflatex		
 \usepackage{amssymb}
+\usepackage{amsmath}
+
 \usepackage{url}
 %SetFonts
 
@@ -24,13 +26,13 @@
 Satadru provided me with two files containing the data of two spaxels,
 \path{manga-7991-12701-38-26.txt} and \path{manga-7991-12701-38-38.txt}.
 The first spectrum I  label with `1` and the second wtih `2`.
-The two spectra are shown in Figure~\ref{spectra:example}.
+The two spectra are shown in Figure~\ref{spectra:fig}.
 
 \begin{figure}[htbp] %  figure placement: here, top, bottom, or page
    \centering
    \includegraphics[width=5in]{../src/spectra.png} 
-   \caption{The two spectra and the mean underlying spectrum.
-   \label{spectra:example}}
+   \caption{The two spectra and the fit  model spectrum.
+   \label{spectra:fig}}
 \end{figure}
 
 The data are modeled as follows:
@@ -38,21 +40,48 @@ The data are modeled as follows:
 \item Model spectrum $I(\lambda)$-- The spectra are assumed to have the same spectral energy distribution, whose amplitude can vary and wavelengths shifted by velocities.
 The underlying spectrum is modeled as a set of flux values on a grid of wavelength values.  The spectrum values between the points are given by linear interpolation between
 the grid points.
+
+A spectral model based on Gaussian Processes works but for technical reasons takes orders of magnitudes longer for my fitting package to solve.
 \item Normalization factors $n$-- The spectrum for each spaxel is the model spectrum times a normalization factor.
 \item Velocity factor $a$-- The line-of-sight velocity in each spaxel relative to the model spectrum.  
 \item Dispersion $\sigma$-- Gaussian randomness between the data and the model spectrum.  This accounts for the fact
 that the data files do not contain measurement uncertainties and that there are real differences between the true and model spectra.  The same dispersion
-ise used for both spectra.
+is used for both spectra.
+
+
+As a practical matter, I first ran a fit assuming zero velocity shift between the spectra.   I used the resulting fit $\sigma$ as an upper-bound guide for my expectation for
+the $\sigma$ including velocity shifts.s
 \end{itemize}
 
 The data from spectrum $i$, $\lambda_i$ and $f_i$ are thus modeled as
 \begin{equation}
-f_i \sim \mathcal{N}\left(n_i I(\ln(\lambda_i) + a_i), \sigma\right).
+f_i \sim \text{Cauchy}\left(n_i I(\ln(\lambda_i) + a_i), \sigma\right).
 \end{equation}
+The long-tailed Cauchy distribution is used instead of the Normal distribution to better accommodate real differences between the underlying spaxel SEDs.
 
 The model is fit to the data.
-The mean model spectrum is shown in Figure~\ref{spectra:example}.
-Of particular interest is the velocity shift of the two spectra, which is to first order
-$(\exp{\left(a_2-a_1\right) }- 1)c$. 
+The mean model spectrum is shown in Figure~\ref{spectra:fig}.
+The pdf of the remaining model parameters are shown in Figure~\ref{corner:fig}.
+Of particular interest is the velocity shift of the two spectra captured
+by $a_2-a_1$.  Approximating the velocity as $\Delta v = (\exp{\left(a_2-a_1\right) }- 1)c$, the
+  68\% confidence interval is $\Delta v =   -166_{-      10}^{+      13}\, \text{km}\,\text{s}^{-1} $. 
+
+
+\begin{figure}[htbp] %  figure placement: here, top, bottom, or page
+   \centering
+   \includegraphics[width=5in]{../src/corner.png} 
+   \caption{The posteriors of the parameters $a_2-a_1$, $n_1$, $n_2$, and $\sigma$ .
+   \label{corner:fig}}
+\end{figure}
+
+Moving forward there are a few things to improve:
+\begin{itemize}
+\item The data wavelength binning is not uniform.  I suspect that it is closer to being uniform in log-$\lambda$.  Changing the current model wavelength binning to
+log would then be appropriate.
+\item The model can be extended to include all spaxels, still assuming a single model spectrum and adding additional normalization $n$ and $a$ parameters
+for each new spaxel.  If STAN is used, I recommend treating $n$ and $a$ is simplexes; $n$ already is but $a$ is not in the current 2-spaxel implementation.
+\end{itemize}
+
+The code, data, and this document are available at \url{https://github.com/AlexGKim/manga}.
 
 \end{document}  

@@ -16,7 +16,7 @@ functions{
 
 data {
   int nlam_m;
-  real dlam;
+  real R2;
   int nlam0;
   int nlam1;
 
@@ -44,19 +44,18 @@ model {
   vector[nlam1] flux1_model;
 
   matrix[nlam1,nlam_m] K_1;
-  real temp;
 
   for (i in 1:nlam1) {
     for (j in 1:nlam_m) {
         // temp = a_1*lam1[i]-lam_m[j];
         // if (fabs(temp) < 5*dlam){
-          K_1[i,j] = a_1*lam1[i]-lam_m[j];
+          K_1[i,j] = a_1+lam1[i]-lam_m[j];
         // } else{
           // K_1[i,j] =0;
         // }
     }
   }
-  K_1 = exp(-K_1 .* K_1/2./dlam^2);
+  K_1 = exp(-K_1 .* K_1/2.*R2);
 
   flux0_model = K_0 * flux;
   // print(K_0);
@@ -72,5 +71,5 @@ model {
   target += normal_lpdf(flux0| flux0_model, sigma);
   target += normal_lpdf(flux1| flux1_model, sigma);
 
-  target += cauchy_lpdf(sigma|0,1);
+  target += cauchy_lpdf(sigma|0,0.03);
 }
