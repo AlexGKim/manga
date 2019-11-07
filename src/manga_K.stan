@@ -67,8 +67,10 @@ data {
   real R;
   vector[nlam0] lam0;
   vector[nlam0] flux0;
+  vector[nlam0] flux0_var;
   vector[nlam1] lam1;
   vector[nlam1] flux1;
+  vector[nlam1] flux1_var;
 
   vector[nlam_m] lam_m;
 
@@ -79,7 +81,7 @@ parameters {
   simplex[2] norm;
   // simplex[2] a_raw;
   real<lower=-arange,upper=arange> scale_a;
-  real<lower=0> sigma;
+  real<lower=0> sigma2;
 }
 
 model {
@@ -107,8 +109,8 @@ model {
   flux0_model = 2*norm[1]*kerp(-0.5*scale_a+lam0,lam_m,flux,R);
   flux1_model = 2*norm[2]*kerp(0.5*scale_a+lam1,lam_m,flux,R);
 
-  target += cauchy_lpdf(flux0| flux0_model, sigma);
-  target += cauchy_lpdf(flux1| flux1_model, sigma);
+  target += cauchy_lpdf(flux0| flux0_model, sqrt(flux0_var+sigma2));
+  target += cauchy_lpdf(flux1| flux1_model, sqrt(flux0_var+sigma2));
 
-  target += cauchy_lpdf(sigma|0,.03); // this is based on the dispersion from zero shift
+  target += cauchy_lpdf(sigma2|0,.0009); // this is based on the dispersion from zero shift
 }

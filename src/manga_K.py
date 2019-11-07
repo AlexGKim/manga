@@ -4,6 +4,36 @@ import numpy
 import matplotlib.pyplot as plt
 import pickle
 
+def telluric_mask(lam):
+    data = numpy.loadtxt('../data/telluric.txt')
+    logicals=[]
+    edges = (lam+numpy.roll(lam,1))/2
+    edges[0]=lam[0]-(lam[1]-lam[0])/2
+    edges = numpy.append(edges, lam[-1]+(lam[-1]-lam[-2])/2)
+    # print(edges[0],edges[1],edges[-1],lam[0],lam[-1],len(edges),len(lam))
+    # wefwe
+    # dlam = lam-numpy.roll(lam,1)
+    # dlam[0]=lam[1]-lam[0]
+    # edges = numpy.array([lam[0]-(lam[1]-lam[0])/2,lam+dlam/2])
+    # print(edges.shape)
+    # wefe 
+    mask = []
+    for i in range(len(lam)):
+        temp=[]
+        for lmin,lmax in zip(data[:,0],data[:,1]):
+            temp.append((edges[i] <= lmin  and lmin<=edges[i+1]) or (lmin<=edges[i+1] and edges[i+1]<=lmax))
+        mask.append(numpy.any(temp))
+
+
+    # for a0, a1 in zip(lam_lower,lam_upper):
+    #     temp=[]
+    #     for lmin,lmax in zip(data[0],data[1]):
+    #         temp.append((a0 <= lmin  and lmin<=a1) or (lmin<=a1 and a1<=lmax))
+    #         print(a0,a1,lmin,lmax,temp[-1])
+    #     mask.append(numpy.any(temp))
+    #     print(mask[-1])
+    return numpy.logical_not(mask)
+
 if __name__ == "__main__":
 
     chains=4
@@ -40,14 +70,16 @@ if __name__ == "__main__":
     for filename in filenames:
         filedata.append(numpy.loadtxt('../data/'+filename))
 
-
-
+    # print(filedata[0][:,0][numpy.logical_not(telluric_mask(filedata[0][:,0]))])
+    # wefe
 
     # truncate the wavelength range for the data
-    w0 = numpy.logical_and(filedata[0][:,0]>= lmin,filedata[0][:,0] < lmax)
-    w1 = numpy.logical_and(filedata[1][:,0]>= lmin,filedata[1][:,0] < lmax)
+    w0 = numpy.logical_and.reduce((filedata[0][:,0]>= lmin,filedata[0][:,0] < lmax,filedata[0][:,3]==1,telluric_mask(filedata[0][:,0])))
+    w1 = numpy.logical_and.reduce((filedata[1][:,0]>= lmin,filedata[1][:,0] < lmax,filedata[1][:,3]==1,telluric_mask(filedata[1][:,0])))
+
     nlam0= w0.sum()
     nlam1 = w1.sum()
+
 
     # si = 1
     # x0=100
@@ -101,7 +133,7 @@ if __name__ == "__main__":
 
     # Model spectrum in log(lambda), STAN runs faster with sum rather than multiplication
 
-    data = {'lam0': numpy.log(filedata[0][w0,0]), 'flux0': res1, 'lam1': numpy.log(filedata[1][w1,0]), 'flux1': res2,
+    data = {'lam0': numpy.log(filedata[0][w0,0]), 'flux0': res1, 'dflux0':1/filedata[0][w0,2], 'lam1': numpy.log(filedata[1][w1,0]), 'flux1': res2, 'dflux1':1/filedata[1][w1,2],
         'lam_m':numpy.log(lam_m), 'nlam_m': len(lam_m),'nlam0':nlam0,'nlam1':nlam1,'arange':arange, 'R': R}
 
     # As an initial condition take the average spectrum
@@ -110,7 +142,7 @@ if __name__ == "__main__":
     # ones[ones <=0] = 1e-3
 
     init = [{
-        'flux': ones, 'a_scale':0.0, 'n':[0.5,0.5], 'sigma':0.03
+        'flux': ones, 'a_scale':0.0, 'n':[0.5,0.5], 'sigma2':0.03**2
     } for i in range(chains)]
 
     # init = [{
