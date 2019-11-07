@@ -133,7 +133,7 @@ if __name__ == "__main__":
 
     # Model spectrum in log(lambda), STAN runs faster with sum rather than multiplication
 
-    data = {'lam0': numpy.log(filedata[0][w0,0]), 'flux0': res1, 'dflux0':1/filedata[0][w0,2], 'lam1': numpy.log(filedata[1][w1,0]), 'flux1': res2, 'dflux1':1/filedata[1][w1,2],
+    data = {'lam0': numpy.log(filedata[0][w0,0]), 'flux0': res1, 'flux0_var':1/filedata[0][w0,2], 'lam1': numpy.log(filedata[1][w1,0]), 'flux1': res2, 'flux1_var':1/filedata[1][w1,2],
         'lam_m':numpy.log(lam_m), 'nlam_m': len(lam_m),'nlam0':nlam0,'nlam1':nlam1,'arange':arange, 'R': R}
 
     # As an initial condition take the average spectrum
