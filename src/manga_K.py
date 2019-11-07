@@ -37,9 +37,9 @@ def telluric_mask(lam):
 if __name__ == "__main__":
 
     chains=4
-    iteration=300
-    warmup=150
-    n_jobs=1
+    iteration=2000
+    warmup=1000
+    n_jobs=4
 
     #range of (1+v) that are possible
     arange =1e-3
@@ -58,7 +58,7 @@ if __name__ == "__main__":
 
     #native 1-pix resolution is 
     native_R = 4342.444731562085
-    R = 1000.
+    R = 2000.
     lam_m = numpy.arange(numpy.log(lmin)-arange-5/R, numpy.log(lmax)+arange+5.5/R,1/R)
     lam_m = numpy.exp(lam_m)
 
