@@ -4,3 +4,4 @@
 *.png
 *.aux
 *.pdf
+pystan/
