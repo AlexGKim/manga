@@ -18,17 +18,17 @@ print(r'${:8.0f}_{{-{:8.0f}}}^{{+{:8.0f}}}$'.format(dum[0],dum[0]-dum[1],dum[2]-
 
 
 
-plt.plot(ans['scale_a'])
-plt.show()
+# plt.plot(ans['scale_a'])
+# plt.show()
 
-plt.plot(ans['sigma'])
-plt.show()
+# plt.plot(ans['sigma2'])
+# plt.show()
 
 c = ChainConsumer()
 # print(ans['scale_a'].shape)
 # print(ans['norm'].shape)
 # sdfd
-c.add_chain([ans['scale_a'],ans['norm'][:,0],ans['norm'][:,1],ans['sigma']], parameters=["$a_2-a_1$", "$n_1$", "$n_2$", r"$\sigma$"])
+c.add_chain([ans['scale_a'],ans['norm'][:,0],ans['norm'][:,1],numpy.sqrt(ans['sigma2'])], parameters=["$a_2-a_1$", "$n_1$", "$n_2$", r"$\sigma$"])
 fig = c.plotter.plot()
 fig.tight_layout()
 fig.savefig('corner.png')
