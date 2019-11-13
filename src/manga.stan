@@ -100,7 +100,7 @@ model {
   flux1_model = 2*norm[2]*kerp(0.5*scale_a+lam1,lam_m,flux,R);
 
   target += cauchy_lpdf(flux0| flux0_model, sqrt(flux0_var+sigma2));
-  target += cauchy_lpdf(flux1| flux1_model, sqrt(flux0_var+sigma2));
+  target += cauchy_lpdf(flux1| flux1_model, sqrt(flux1_var+sigma2));
 
   target += cauchy_lpdf(sigma2|0,.0009); // this is based on the dispersion from zero shift
 }
